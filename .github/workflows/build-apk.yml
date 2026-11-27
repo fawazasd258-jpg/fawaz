@@ -1,0 +1,53 @@
+
+name: Build Waseel Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Extract Flutter project
+        run: |
+          unzip -q flutter-project.zip -d /tmp/waseel-source
+          cp -a /tmp/waseel-source/flutter-project/lib .
+          cp /tmp/waseel-source/flutter-project/pubspec.yaml .
+
+      - name: Generate Android platform
+        run: |
+          flutter create --platforms=android --org com.waseel --project-name waseel_app /tmp/waseel_scaffold
+          cp -a /tmp/waseel_scaffold/android ./android
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Waseel-Android-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
