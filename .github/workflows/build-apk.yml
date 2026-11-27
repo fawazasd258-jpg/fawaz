@@ -31,7 +31,7 @@ jobs:
 
       - name: Extract Flutter project
         run: |
-          unzip -q flutter-project.zip -d /tmp/waseel-source
+          unzip -q flutter-project-fixed.zip -d /tmp/waseel-source
           cp -a /tmp/waseel-source/flutter-project/lib .
           cp /tmp/waseel-source/flutter-project/pubspec.yaml .
 
